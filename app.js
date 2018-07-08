@@ -30,12 +30,16 @@ var search_template = {
 
 
 function f_search(target) {
-	var results = fuzzy.filter(target,items,search_template)
-	return results.map(function(x) { return x.original })
+    var results = fuzzy.filter(target,items,search_template)
+    return results.map(function(x) { return x.original })
 }
 
 function push_channel(channel, message) {
-    client.channels.get(channel).send(message)
+    try {
+	client.channels.get(channel).send(message)
+    } catch(err) {
+	logger.error("Can't send messages! Do you have your channel ID set?")
+    }
 }
 
 
@@ -100,5 +104,8 @@ client.on('message', msg => {
 	}
     }
 })
-
-client.login(config.token)
+try {
+    client.login(config.token)
+} catch (err) {
+    logger.error("Can't login! There's probably something wrong with your token!")
+}
