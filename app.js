@@ -7,7 +7,7 @@ const items = new Items()
 const fuzzy = require('fuzzy')
 const request = require('request')
 const config = require('./config.json')
-
+const capitalize = require('string-capitalize')
 const channel_id = ""
 
 const signale_options = {
@@ -100,6 +100,34 @@ client.on('message', msg => {
 		     push_channel(channel_id,alerts.join("\n"))
 		 }
 	     })
+	    break
+	case ".relic":
+	    if(content.length < 3) {
+		msg.reply("Wrong format! Try .relic **tier** **name** (like .relic axi a1)")
+	    } else {
+		var tier = capitalize(content[1])
+		var name = capitalize(content[2])
+		request(`https://drops.warframestat.us/data/relics/${tier}/${name}.json`, function (error, response, body) {
+		    if(error) {
+			logger.error(error)
+		    } else {
+			var json = []
+			try {
+			    json = JSON.parse(body)
+			} catch(e) {
+			    logger.error("Definitely not JSON!")
+			}
+			logger.info(json)
+			var relics = clem.parse_relics([json])
+			if(relics.length > 0) {
+			    for(var relic of relics) {
+				logger.info(relic)
+				push_channel(config.channel_id,relic.toString())
+			    }
+			}
+		    }
+		})
+	    }
 	    break
 	}
     }

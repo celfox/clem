@@ -1,5 +1,5 @@
 const duration = require('human-duration')
-var previous_alerts = []
+var previous_alerts = [] // fuck you javascript
 
 function parse_components(components) { 
     var out = []
@@ -14,6 +14,18 @@ function parse_components(components) {
     }
     return out.join('\n')
 }
+
+
+
+
+function parse_relic_rewards(rewards) {
+    var out = []
+    for(var reward of rewards) {
+	out.push(`${reward.itemName} at ${reward.chance}%`)
+    }
+    return out
+}
+
 function parse_drops(drops) {
     var out = []
     for(var drop of drops) {
@@ -45,7 +57,6 @@ function process_alert(alert) {
 module.exports = {
     process_alerts: function process_alerts(data, diff, logger) {
 	var out = []	
-
 	if(diff) {
 	    var alerts = data.map(xs => xs.id)
 	    var new_alerts = alerts.filter(xs => !previous_alerts.includes(xs))
@@ -62,7 +73,14 @@ module.exports = {
 	}
 	return out
     },
-
+    parse_relics: function parse_relics(relics) {
+	var out = []
+	for(var relic of relics) {
+	    var rewards = parse_relic_rewards(relic.rewards.Radiant).join("\n")
+	    out.push(`(Radiant) ${relic.tier} ${relic.name}\n${rewards}`)
+	}
+	return out
+    },
     transform_results: function transform_results(res) {
 	var out = []
 	for(var item of res) {
