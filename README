@@ -1,0 +1,25 @@
+Clem is a Warframe bot for Discord.
+
+Current features:
+
+- It tracks alerts.
+- You can search for items and get their components and stuff.
+
+It's kind of terrible, sorry.
+
+Commands:
+
+.search <item-partial-name>
+.alerts
+
+Note: alert notification happens automatically. There are separate emoji for nitain vs non-nitain.
+
+Dependencies:
+
+discord.js
+signale
+warframe-items
+fuzzy
+request
+lodash/array (working on removing this one)
+human-duration
