@@ -1,4 +1,3 @@
-const _ = require('lodash/array')
 const duration = require('human-duration')
 var previous_alerts = []
 
@@ -49,7 +48,7 @@ module.exports = {
 
 	if(diff) {
 	    var alerts = data.map(xs => xs.id)
-	    var new_alerts = _.difference(alerts,previous_alerts)
+	    var new_alerts = alerts.filter(xs => !previous_alerts.includes(xs))
 	    logger.info(new_alerts)
 	    previous_alerts = alerts
 	    var correct_data = data.filter(xs => new_alerts.includes(xs.id))
