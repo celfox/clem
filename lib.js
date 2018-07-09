@@ -19,37 +19,27 @@ function parse_components(components) {
 
 
 function parse_relic_rewards(rewards) {
-    var out = []
-    for(var reward of rewards) {
-	out.push(`${reward.itemName} at ${reward.chance}%`)
-    }
-    return out
+    return rewards.map(xs => `${xs.itemName} at ${xs.chance}%`)
 }
 
 function parse_drops(drops) {
-    var out = []
-    for(var drop of drops) {
-	out.push(`${drop.location} as a ${drop.type} at a chance of ${drop.chance * 100}%`)
-    }
-    return out.join('\n')
+    return drops.map(xs => `${xs.location} as a ${xs.type} at a chance of ${xs.chance * 100}%`)
 }
 function parse_drops_brevity(drops) {
-    var out = []
-    for(var drop of drops) {
-	out.push(`${drop.location} ${drop.chance * 100}%`)
-    }
-    return out.join('\n')
+    return drops.map(xs => `${xs.location} ${xs.chance * 100}%`)
 }    
 
 function precise(x) {
     return Number.parseFloat(x).toPrecision(4);
 }
-function process_alert(alert) {
+function process_alert(alert, important_only) {
     var out = `${alert.mission.type} on ${alert.mission.node} for ${alert.mission.reward.asString}`
-    if(alert.mission.reward.asString.includes("Nitain")) {
+    if(alert.mission.reward.asString.includes("Nitain") || alert.mission.reward.asString.includes("Catalyst")) {
 	out = "🚨 " + out + " 🚨"
     } else {
-	out = "⚠ " + out
+	if(important_only) {
+	    out = null
+	}
     }
     return out
 }
@@ -64,11 +54,11 @@ module.exports = {
 	    previous_alerts = alerts
 	    var correct_data = data.filter(xs => new_alerts.includes(xs.id))
 	    for(var alert of correct_data) {
-		out.push(process_alert(alert))
+		out.push(process_alert(alert, true))
 	    }
 	} else {
 	    for(var alert of data) {
-		out.push(process_alert(alert))
+		out.push(process_alert(alert, false))
 	    }
 	}
 	return out
@@ -76,8 +66,12 @@ module.exports = {
     parse_relics: function parse_relics(relics) {
 	var out = []
 	for(var relic of relics) {
+	    try {
 	    var rewards = parse_relic_rewards(relic.rewards.Radiant).join("\n")
-	    out.push(`(Radiant) ${relic.tier} ${relic.name}\n${rewards}`)
+		out.push(`(Radiant) \`\`\`${relic.tier} ${relic.name}\n${rewards}\`\`\``)
+	    } catch (e) {
+		
+	    }
 	}
 	return out
     },
